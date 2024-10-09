@@ -14,9 +14,13 @@ RUN apt-get update && apt-get install -y \
     libgcrypt-dev \
     autoconf \
     libtool \
+    libffi-dev \
+    libgmp-dev \
+    libc6-dev \
+    libltdl-dev \
     libunistring-dev \
+    libgc-dev \
     pkg-config \
-    guile-2.2-dev \
     git \
     && rm -rf /var/lib/apt/lists/*
 
