@@ -56,5 +56,5 @@ RUN git clone https://notabug.org/cwebber/guile-gcrypt.git && \
 WORKDIR /
 RUN rm -rf /tmp/guile-${GUILE_VERSION}.tar.gz /tmp/guile-${GUILE_VERSION} /tmp/guile-json /tmp/guile /tmp/guile-gcrypt
 
-# Set the default command to start an interactive Guile shell
+# Set the default command to start an interactive Guile shell.
 CMD ["guile"]
