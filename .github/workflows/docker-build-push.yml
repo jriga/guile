@@ -37,8 +37,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            --build-arg GUILE_VERSION=${{vars.GUILE_VERSION }} \  # Pass the input parameter
-            -t ${{ secrets.DOCKERHUB_USERNAME }}/guile:${{vars.GUILE_VERSION }} .  # Tag image with Guile version
+            --build-arg GUILE_VERSION=${{vars.GUILE_VERSION }} -t ${{ secrets.DOCKERHUB_USERNAME }}/guile:${{vars.GUILE_VERSION }} .  # Tag image with Guile version
 
       # Push the Docker image to DockerHub
       - name: Push Docker image
