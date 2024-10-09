@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
     libgcrypt-dev \
     autoconf \
     libtool \
+    libunistring-dev \
     pkg-config \
     guile-2.2-dev \
     git \
