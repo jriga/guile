@@ -34,7 +34,7 @@ RUN wget ftp://ftp.gnu.org/gnu/guile/guile-${GUILE_VERSION}.tar.gz && \
     make install
 
 # Install guile-json
-RUN git clone https://gitlab.com/guile-proj/guile-json.git && \
+RUN git clone https://github.com/aconchillo/guile-json.git && \
     cd guile-json && \
     autoreconf -vif && \
     ./configure && \
