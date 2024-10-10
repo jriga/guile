@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y \
     libgc-dev \
     pkg-config \
     texinfo \
+    libtool-bin \
     git \
     && rm -rf /var/lib/apt/lists/*
 
