@@ -58,7 +58,6 @@ RUN git clone https://gitlab.com/gnutls/guile.git && \
 # Install guile-gcrypt
 RUN git clone https://notabug.org/cwebber/guile-gcrypt.git && \
     cd guile-gcrypt && \
-    autoreconf -vif && \
     ./configure && \
     make && \
     make install
