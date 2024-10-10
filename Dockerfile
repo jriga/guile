@@ -24,14 +24,18 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Download and install Guile
 WORKDIR /tmp
+
+# Download and install Guile
 RUN wget ftp://ftp.gnu.org/gnu/guile/guile-${GUILE_VERSION}.tar.gz && \
     zcat guile-${GUILE_VERSION}.tar.gz | tar xvf - && \
     cd guile-${GUILE_VERSION} && \
     ./configure && \
     make && \
     make install
+
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/lib
+ENV LD_RUN_PATH $LD_RUN_PATH:/usr/local/lib
 
 # Install guile-json
 RUN git clone https://github.com/aconchillo/guile-json.git && \
