@@ -1,5 +1,5 @@
 # Use Ubuntu 24.04 as the base image
-FROM ubuntu:24.04
+FROM ubuntu:24.04 as build
 
 # Set an argument for the Guile version, default to 3.0.10
 ARG GUILE_VERSION=3.0.10
@@ -67,6 +67,13 @@ RUN git clone https://notabug.org/cwebber/guile-gcrypt.git && \
 # Clean up temporary files
 WORKDIR /
 RUN rm -rf /tmp/guile-${GUILE_VERSION}.tar.gz /tmp/guile-${GUILE_VERSION} /tmp/guile-json /tmp/guile /tmp/guile-gcrypt
+
+
+FROM ubuntu:24.04 as main
+
+COPY --from=build /usr/local/bin /usr/local/bin
+COPY --from=build /usr/local/lib /usr/local/lib
+COPY --from=build /usr/local/share /usr/local/share
 
 # Set the default command to start an interactive Guile shell.
 CMD ["guile"]
