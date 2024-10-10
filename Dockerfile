@@ -71,9 +71,13 @@ RUN rm -rf /tmp/guile-${GUILE_VERSION}.tar.gz /tmp/guile-${GUILE_VERSION} /tmp/g
 
 FROM ubuntu:24.04 as main
 
-COPY --from=build /usr/local/bin /usr/local/bin
-COPY --from=build /usr/local/lib /usr/local/lib
-COPY --from=build /usr/local/share /usr/local/share
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib \
+    LD_RUN_PATH=$LD_RUN_PATH:/usr/local/lib
+
+COPY --from=build /usr/local/bin /usr/local/bin \
+                  /usr/local/lib /usr/local/lib \
+                  /usr/local/share /usr/local/share \
+                  /usr/lib/x86_64-linux-gnu/*.so* /usr/lib/x86_64-linux-gnu
 
 # Set the default command to start an interactive Guile shell.
 CMD ["guile"]
