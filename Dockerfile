@@ -74,7 +74,7 @@ FROM ubuntu:24.04 as main
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib \
     LD_RUN_PATH=$LD_RUN_PATH:/usr/local/lib
 
-RUN mkdir /usr/lib/x86_64-linux-gnu
+RUN mkdir -p /usr/lib/x86_64-linux-gnu
 COPY --from=build /usr/local/bin /usr/local/bin \
                   /usr/local/lib /usr/local/lib \
                   /usr/local/share /usr/local/share \
