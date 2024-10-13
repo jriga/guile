@@ -74,6 +74,10 @@ FROM ubuntu:24.04 as main
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib \
     LD_RUN_PATH=$LD_RUN_PATH:/usr/local/lib
 
+COPY --from=build /usr/local/bin /usr/local/bin
+COPY --from=build /usr/local/lib /usr/local/lib
+COPY --from=build /usr/local/share /usr/local/share
+
 RUN apt-get update && apt-get install -y \
     zlib1g-dev \
     gnutls-bin \
@@ -86,10 +90,6 @@ RUN apt-get update && apt-get install -y \
     libunistring-dev \
     libgc-dev \
     && rm -rf /var/lib/apt/lists/*
-
-COPY --from=build /usr/local/bin /usr/local/bin \
-                  /usr/local/lib /usr/local/lib \
-                  /usr/local/share /usr/local/share
 
 # Set the default command to start an interactive Guile shell.
 CMD ["guile"]
