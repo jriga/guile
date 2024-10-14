@@ -1,45 +1,42 @@
-# Use Ubuntu 24.04 as the base image
-FROM ubuntu:24.04 as build
+FROM alpine:3.20 as builder
 
-# Set an argument for the Guile version, default to 3.0.10
 ARG GUILE_VERSION=3.0.10
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    wget \
-    zlib1g-dev \
-    gnutls-bin \
-    libgnutls28-dev \
-    libgcrypt-dev \
-    autoconf \
-    libtool \
-    libffi-dev \
-    libgmp-dev \
-    libc6-dev \
-    libltdl-dev \
-    libunistring-dev \
-    libgc-dev \
-    pkg-config \
-    texinfo \
-    libtool-bin \
-    git \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk update && apk add --no-cache \
+      gcc \
+      g++ \
+      make \
+      automake \
+      autoconf \
+      libtool \
+      texinfo \
+      gettext-dev \
+      libunistring-dev \
+      libffi-dev \
+      gc-dev \
+      gmp-dev \
+      libunistring-dev \
+      readline-dev \
+      wget 
 
 WORKDIR /tmp
 
-# Download and install Guile
-RUN wget ftp://ftp.gnu.org/gnu/guile/guile-${GUILE_VERSION}.tar.gz && \
-    zcat guile-${GUILE_VERSION}.tar.gz | tar xvf - && \
+# Download and compile Guile
+RUN wget https://ftp.gnu.org/gnu/guile/guile-${GUILE_VERSION}.tar.gz && \
+    tar xzf guile-${GUILE_VERSION}.tar.gz && \
     cd guile-${GUILE_VERSION} && \
-    ./configure && \
+    ./configure --prefix=/usr/local && \
     make && \
-    make install
-
-ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/local/lib
-ENV LD_RUN_PATH $LD_RUN_PATH:/usr/local/lib
+    make install && \
+    cd .. && \
+    rm -rf guile-${GUILE_VERSION} guile-${GUILE_VERSION}.tar.gz
+    
+# Update dynamic linker run-time bindings
+RUN ldconfig /usr/local/lib
 
 # Install guile-json
+RUN apk add --no-cache \
+    git
 RUN git clone https://github.com/aconchillo/guile-json.git && \
     cd guile-json && \
     autoreconf -vif && \
@@ -48,6 +45,8 @@ RUN git clone https://github.com/aconchillo/guile-json.git && \
     make install
 
 # Install guile-gnutls
+RUN apk add --no-cache \
+    gnutls-dev
 RUN git clone https://gitlab.com/gnutls/guile.git && \
     cd guile && \
     autoreconf -vif && \
@@ -56,6 +55,8 @@ RUN git clone https://gitlab.com/gnutls/guile.git && \
     make install
 
 # Install guile-gcrypt
+RUN apk add --no-cache \
+    libgcrypt-dev 
 RUN git clone https://notabug.org/cwebber/guile-gcrypt.git && \
     cd guile-gcrypt && \
     cp ../guile/m4/guile.m4 m4/guile.m4 && \
@@ -64,32 +65,27 @@ RUN git clone https://notabug.org/cwebber/guile-gcrypt.git && \
     make && \
     make install
 
-# Clean up temporary files
-WORKDIR /
-RUN rm -rf /tmp/guile-${GUILE_VERSION}.tar.gz /tmp/guile-${GUILE_VERSION} /tmp/guile-json /tmp/guile /tmp/guile-gcrypt
 
+FROM alpine:3.20 as main
 
-FROM ubuntu:24.04 as main
+# Copy Guile from the builder stage
+COPY --from=builder /usr/local /usr/local
 
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib \
-    LD_RUN_PATH=$LD_RUN_PATH:/usr/local/lib
+# Install runtime dependencies
+RUN apk update && apk add --no-cache \
+    libgcc \
+    libstdc++ \
+    libunistring \
+    libffi \
+    gc \
+    gmp \
+    readline \
+    gnutls \
+    libgcrypt \
+    gettext
 
-COPY --from=build /usr/local/bin /usr/local/bin
-COPY --from=build /usr/local/lib /usr/local/lib
-COPY --from=build /usr/local/share /usr/local/share
-
-RUN apt-get update && apt-get install -y \
-    zlib1g-dev \
-    gnutls-bin \
-    libgnutls28-dev \
-    libgcrypt-dev \
-    libffi-dev \
-    libgmp-dev \
-    libc6-dev \
-    libltdl-dev \
-    libunistring-dev \
-    libgc-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Update dynamic linker run-time bindings
+RUN ldconfig /usr/local/lib
 
 # Set the default command to start an interactive Guile shell.
 CMD ["guile"]
