@@ -10,7 +10,7 @@ on:
       GUILE_VERSION:
         description: 'Version of Guile to build'
         required: true
-        default: '3.0.10'  # Default Guile version, you can modify this if needed
+        default: '3.0.9'  # Default Guile version, you can modify this if needed
 
 
 jobs:
