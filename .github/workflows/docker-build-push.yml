@@ -36,17 +36,23 @@ jobs:
       # Build the Docker image with dynamic Guile version
       - name: Build Docker image
         run: |
+          for l in $(ls Dockerfile.* | cut -d . -f 2); do \
           docker build \
-            --build-arg GUILE_VERSION=${{vars.GUILE_VERSION }} -t ${{ secrets.DOCKERHUB_USERNAME }}/guile:${{vars.GUILE_VERSION }} .  # Tag image with Guile version
+            -f Dockerfile.$l \
+            --build-arg GUILE_VERSION=${{vars.GUILE_VERSION }} \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/guile:${{vars.GUILE_VERSION }}-$l .  ; \
+          done
 
       # Push the Docker image to DockerHub
       - name: Push Docker image
         run: |
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/guile:${{vars.GUILE_VERSION }}  # Push image with the Guile version tag
+          for l in $(ls Dockerfile.* | cut -d . -f 2); do \
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/guile:${{vars.GUILE_VERSION }}-$l ; \
+          done
 
       # Optionally, tag and push the latest version if on main branch.
       - name: Tag and push latest version
         if: github.ref == 'refs/heads/main'
         run: |
-          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/guile:${{vars.GUILE_VERSION }} ${{ secrets.DOCKERHUB_USERNAME }}/guile:latest
+          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/guile:${{vars.GUILE_VERSION }}-alpine ${{ secrets.DOCKERHUB_USERNAME }}/guile:latest
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/guile:latest

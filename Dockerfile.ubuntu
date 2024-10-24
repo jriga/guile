@@ -79,16 +79,15 @@ COPY --from=build /usr/local/lib /usr/local/lib
 COPY --from=build /usr/local/share /usr/local/share
 
 RUN apt-get update && apt-get install -y \
-    zlib1g-dev \
+    zlib1g \
     gnutls-bin \
-    libgnutls28-dev \
-    libgcrypt-dev \
-    libffi-dev \
-    libgmp-dev \
-    libc6-dev \
-    libltdl-dev \
-    libunistring-dev \
-    libgc-dev \
+    libgcrypt20 \
+    libffi8 \
+    libgmp10 \
+    libc6 \
+    libltdl7 \
+    libunistring2 \
+    libgc1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the default command to start an interactive Guile shell.
