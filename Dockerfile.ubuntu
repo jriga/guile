@@ -86,7 +86,7 @@ RUN apt-get update && apt-get install -y \
     libgmp10 \
     libc6 \
     libltdl7 \
-    libunistring2 \
+    libunistring5 \
     libgc1 \
     && rm -rf /var/lib/apt/lists/*
 
